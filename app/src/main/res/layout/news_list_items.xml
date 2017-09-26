@@ -63,6 +63,7 @@
             android:layout_gravity="end"
             android:textColor="@color/colorAccent"
             android:textSize="12sp"
+            android:textAllCaps="true"
             tools:text="Business" />
 
     </LinearLayout>

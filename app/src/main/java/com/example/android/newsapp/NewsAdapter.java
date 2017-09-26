@@ -16,9 +16,8 @@ import java.util.List;
 
 public class NewsAdapter extends ArrayAdapter<News> {
 
-    private static final String LOCATION_SEPARATOR = " of ";
 
-    public EarthquakeAdapter(Context context, List<News> earthquake) {
+    public NewsAdapter(Context context, List<News> earthquake) {
         super(context, 0, earthquake);
     }
 
@@ -33,25 +32,16 @@ public class NewsAdapter extends ArrayAdapter<News> {
         }
 
         // Find the earthquake at the given position in the list of earthquakes
-        News currentEarthquake = getItem(position);
+        News currentNews = getItem(position);
 
-        TextView magnitudeView = (TextView) listItemView.findViewById(R.id.magnitude);
+        TextView titleView = (TextView) listItemView.findViewById(R.id.article_title);
         // Format the magnitude to show 1 decimal place
-        String formattedMagnitude = formatMagnitude(currentEarthquake.getMagnitude());
+        String articleTitle = articleTitle(currentNews.getTitle());
         // Display the magnitude of the current earthquake in that TextView
-        magnitudeView.setText(formattedMagnitude);
+        titleView.setText(articleTitle);
 
-        // Set the proper background color on the magnitude circle.
-        // Fetch the background from the TextView, which is a GradientDrawable.
-        GradientDrawable magnitudeCircle = (GradientDrawable) magnitudeView.getBackground();
 
-        // Get the appropriate background color based on the current earthquake magnitude
-        int magnitudeColor = getMagnitudeColor(currentEarthquake.getMagnitude());
-
-        // Set the color on the magnitude circle
-        magnitudeCircle.setColor(magnitudeColor);
-
-        String originalLocation = currentEarthquake.getLocation();
+        String description = currentNews.get();
 
         String primaryLocation;
         String locationOffset;
@@ -72,7 +62,7 @@ public class NewsAdapter extends ArrayAdapter<News> {
         locationOffsetView.setText(locationOffset);
 
         // Create a new Date object from the time in milliseconds of the earthquake
-        Date dateObject = new Date(currentEarthquake.getDate());
+        Date dateObject = new Date(currentNews.getDate());
 
         // Find the TextView with view ID date
         TextView dateView = (TextView) listItemView.findViewById(R.id.date);
@@ -94,50 +84,6 @@ public class NewsAdapter extends ArrayAdapter<News> {
     }
 
     /**
-     * Return the color for the magnitude circle based on the intensity of the earthquake.
-     *
-     * @param magnitude of the earthquake
-     */
-    private int getMagnitudeColor(double magnitude) {
-        int magnitudeColorResourceId;
-        int magnitudeFloor = (int) Math.floor(magnitude);
-        switch (magnitudeFloor) {
-            case 0:
-            case 1:
-                magnitudeColorResourceId = R.color.magnitude1;
-                break;
-            case 2:
-                magnitudeColorResourceId = R. color.magnitude2;
-                break;
-            case 3:
-                magnitudeColorResourceId = R.color.magnitude3;
-                break;
-            case 4:
-                magnitudeColorResourceId = R.color.magnitude4;
-                break;
-            case 5:
-                magnitudeColorResourceId = R.color.magnitude5;
-                break;
-            case 6:
-                magnitudeColorResourceId = R.color.magnitude6;
-                break;
-            case 7:
-                magnitudeColorResourceId = R.color.magnitude7;
-                break;
-            case 8:
-                magnitudeColorResourceId = R.color.magnitude8;
-                break;
-            case 9:
-                magnitudeColorResourceId = R.color.magnitude9;
-                break;
-            default:
-                magnitudeColorResourceId = R.color.magnitude10plus;
-                break;
-        }
-        return ContextCompat.getColor(getContext(), magnitudeColorResourceId);
-    }
-
-    /**
      * Return the formatted magnitude string showing 1 decimal place (i.e. "3.2")
      * from a decimal magnitude value.
      */
@@ -147,18 +93,18 @@ public class NewsAdapter extends ArrayAdapter<News> {
     }
 
     /**
-     * Return the formatted date string (i.e. "Mar 3, 1984") from a Date object.
+     * Return the formatted date string (i.e. "3 Mar 1984") from a Date object.
      */
     private String formatDate(Date dateObject) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("LLL dd, yyyy");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd LLL yyyy");
         return dateFormat.format(dateObject);
     }
 
     /**
-     * Return the formatted date string (i.e. "4:30 PM") from a Date object.
+     * Return the formatted date string (i.e. "14:30") from a Date object.
      */
     private String formatTime(Date dateObject) {
-        SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm a");
+        SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm");
         return timeFormat.format(dateObject);
     }
 }

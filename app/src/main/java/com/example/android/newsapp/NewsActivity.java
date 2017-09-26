@@ -27,7 +27,7 @@ public class NewsActivity extends AppCompatActivity
     public static final String LOG_TAG = NewsActivity.class.getName();
 
     /** URL for earthquake data from the USGS dataset */
-    private static final String USGS_REQUEST_URL = "https://earthquake.usgs.gov/fdsnws/event/1/query";
+    private static final String GUARDIAN_REQUEST_URL = "https://content.guardianapis.com/search";
 
     /**
      * Constant value for the earthquake loader ID. We can choose any integer.
@@ -47,21 +47,21 @@ public class NewsActivity extends AppCompatActivity
         setContentView(R.layout.news_activity);
 
         // Find a reference to the {@link ListView} in the layout
-        ListView earthquakeListView = (ListView) findViewById(R.id.list);
+        ListView newsListView = (ListView) findViewById(R.id.list);
 
         mEmptyStateTextView = (TextView) findViewById(R.id.empty_view);
-        earthquakeListView.setEmptyView(mEmptyStateTextView);
+        newsListView.setEmptyView(mEmptyStateTextView);
 
         // Create a new adapter that takes an empty list of news as input
         mAdapter = new NewsAdapter(this, new ArrayList<News>());
 
         // Set the adapter on the {@link ListView}
         // so the list can be populated in the user interface
-        earthquakeListView.setAdapter(mAdapter);
+        newsListView.setAdapter(mAdapter);
 
         // Set an item click listener on the ListView, which sends an intent to a web browser
         // to open a website with more information about the selected earthquake.
-        earthquakeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        newsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 // Find the current earthquake that was clicked on
@@ -110,14 +110,14 @@ public class NewsActivity extends AppCompatActivity
 
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         String minMagnitude = sharedPrefs.getString(
-                getString(R.string.settings_min_magnitude_key),
-                getString(R.string.settings_min_magnitude_default));
-        Uri baseUri = Uri.parse(USGS_REQUEST_URL);
+                getString(R.string.settings_section_name_key),
+                getString(R.string.settings_section_name_default));
+        Uri baseUri = Uri.parse(GUARDIAN_REQUEST_URL);
         Uri.Builder uriBuilder = baseUri.buildUpon();
 
         uriBuilder.appendQueryParameter("format", "geojson");
         uriBuilder.appendQueryParameter("limit", "10");
-        uriBuilder.appendQueryParameter("minmag", minMagnitude);
+        uriBuilder.appendQueryParameter("show-fields", "trailText");
         uriBuilder.appendQueryParameter("orderby", "time");
 
         return new NewsLoader(this, uriBuilder.toString());

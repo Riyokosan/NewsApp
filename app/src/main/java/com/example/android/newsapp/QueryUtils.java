@@ -1,167 +1,206 @@
 package com.example.android.newsapp;
 
-import android.app.LoaderManager;
-import android.content.Context;
-import android.content.Intent;
-import android.content.Loader;
-import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.Uri;
-import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.text.TextUtils;
+import android.util.Log;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-public class QueryUtils extends AppCompatActivity
-        implements LoaderManager.LoaderCallbacks<List<News>> {
+import static com.example.android.newsapp.NewsActivity.LOG_TAG;
 
-    public static final String LOG_TAG = NewsActivity.class.getName();
-
-    /** URL for earthquake data from the USGS dataset */
-    private static final String GUARDIAN_REQUEST_URL = "https://earthquake.usgs.gov/fdsnws/event/1/query";
+public final class QueryUtils {
 
     /**
-     * Constant value for the earthquake loader ID. We can choose any integer.
-     * This really only comes into play if you're using multiple loaders.
+     * Create a private constructor because no one should ever create a {@link QueryUtils} object.
+     * This class is only meant to hold static variables and methods, which can be accessed
+     * directly from the class name QueryUtils (and an object instance of QueryUtils is not needed).
      */
-    private static final int NEWS_LOADER_ID = 1;
+    private QueryUtils() {
+    }
 
-    /** Adapter for the list of earthquakes */
-    private NewsAdapter mAdapter;
+    /**
+     * Returns new URL object from the given string URL.
+     */
+    private static URL createUrl(String stringUrl) {
+        URL url = null;
+        try {
+            url = new URL(stringUrl);
+        } catch (MalformedURLException e) {
+            Log.e(LOG_TAG, "Problem building the URL ", e);
+        }
+        return url;
+    }
 
-    /** TextView that is displayed when the list is empty */
-    private TextView mEmptyStateTextView;
+    /**
+     * Make an HTTP request to the given URL and return a String as the response.
+     */
+    private static String makeHttpRequest(URL url) throws IOException {
+        String jsonResponse = "";
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.news_activity);
+        // If the URL is null, then return early.
+        if (url == null) {
+            return jsonResponse;
+        }
 
-        // Find a reference to the {@link ListView} in the layout
-        ListView newsListView = (ListView) findViewById(R.id.list);
+        HttpURLConnection urlConnection = null;
+        InputStream inputStream = null;
+        try {
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setReadTimeout(10000 /* milliseconds */);
+            urlConnection.setConnectTimeout(15000 /* milliseconds */);
+            urlConnection.setRequestMethod("GET");
+            urlConnection.connect();
 
-        mEmptyStateTextView = (TextView) findViewById(R.id.empty_view);
-        newsListView.setEmptyView(mEmptyStateTextView);
-
-        // Create a new adapter that takes an empty list of earthquakes as input
-        mAdapter = new NewsAdapter(this, new ArrayList<News>());
-
-        // Set the adapter on the {@link ListView}
-        // so the list can be populated in the user interface
-        newsListView.setAdapter(mAdapter);
-
-        // Set an item click listener on the ListView, which sends an intent to a web browser
-        // to open a website with more information about the selected earthquake.
-        newsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                // Find the current earthquake that was clicked on
-                News currentEarthquake = mAdapter.getItem(position);
-
-                // Convert the String URL into a URI object (to pass into the Intent constructor)
-                Uri earthquakeUri = Uri.parse(currentEarthquake.getUrl());
-
-                // Create a new intent to view the earthquake URI
-                Intent websiteIntent = new Intent(Intent.ACTION_VIEW, earthquakeUri);
-
-                // Send the intent to launch a new activity
-                startActivity(websiteIntent);
+            // If the request was successful (response code 200),
+            // then read the input stream and parse the response.
+            if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                inputStream = urlConnection.getInputStream();
+                jsonResponse = readFromStream(inputStream);
+            } else {
+                Log.e(LOG_TAG, "Error response code: " + urlConnection.getResponseCode());
             }
-        });
-
-        // Get a reference to the ConnectivityManager to check state of network connectivity
-        ConnectivityManager connMgr = (ConnectivityManager)
-                getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        // Get details on the currently active default data network
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-
-        // If there is a network connection, fetch data
-        if (networkInfo != null && networkInfo.isConnected()) {
-            // Get a reference to the LoaderManager, in order to interact with loaders.
-            LoaderManager loaderManager = getLoaderManager();
-
-            // Initialize the loader. Pass in the int ID constant defined above and pass in null for
-            // the bundle. Pass in this activity for the LoaderCallbacks parameter (which is valid
-            // because this activity implements the LoaderCallbacks interface).
-            loaderManager.initLoader(NEWS_LOADER_ID, null, this);
-        } else {
-            // Otherwise, display error
-            // First, hide loading indicator so error message will be visible
-            View loadingIndicator = findViewById(R.id.loading_indicator);
-            loadingIndicator.setVisibility(View.GONE);
-
-            // Update empty state with no connection error message
-            mEmptyStateTextView.setText(R.string.no_connection);
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "Problem retrieving the new JSON results.", e);
+        } finally {
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
+            if (inputStream != null) {
+                // Closing the input stream could throw an IOException, which is why
+                // the makeHttpRequest(URL url) method signature specifies than an IOException
+                // could be thrown.
+                inputStream.close();
+            }
         }
+        return jsonResponse;
     }
 
-    @Override
-    public Loader<List<News>> onCreateLoader(int i, Bundle bundle) {
-
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String minMagnitude = sharedPrefs.getString(
-                getString(R.string.settings_min_magnitude_key),
-                getString(R.string.settings_min_magnitude_default));
-        Uri baseUri = Uri.parse(GUARDIAN_REQUEST_URL);
-        Uri.Builder uriBuilder = baseUri.buildUpon();
-
-        uriBuilder.appendQueryParameter("format", "geojson");
-        uriBuilder.appendQueryParameter("limit", "10");
-        uriBuilder.appendQueryParameter("minmag", minMagnitude);
-        uriBuilder.appendQueryParameter("orderby", "time");
-
-        return new NewsLoader(this, uriBuilder.toString());
-    }
-
-    @Override
-    public void onLoadFinished(Loader<List<News>> loader, List<News> earthquakes) {
-        // Hide loading indicator because the data has been loaded
-        View loadingIndicator = findViewById(R.id.loading_indicator);
-        loadingIndicator.setVisibility(View.GONE);
-
-        // Set empty state text to display "No earthquakes found."
-        mEmptyStateTextView.setText(R.string.no_earthquakes);
-
-        // Clear the adapter of previous earthquake data
-        mAdapter.clear();
-
-        // If there is a valid list of {@link Earthquake}s, then add them to the adapter's
-        // data set. This will trigger the ListView to update.
-        if (earthquakes != null && !earthquakes.isEmpty()) {
-            mAdapter.addAll(earthquakes);
+    /**
+     * Convert the {@link InputStream} into a String which contains the
+     * whole JSON response from the server.
+     */
+    private static String readFromStream(InputStream inputStream) throws IOException {
+        StringBuilder output = new StringBuilder();
+        if (inputStream != null) {
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream, Charset.forName("UTF-8"));
+            BufferedReader reader = new BufferedReader(inputStreamReader);
+            String line = reader.readLine();
+            while (line != null) {
+                output.append(line);
+                line = reader.readLine();
+            }
         }
+        return output.toString();
     }
 
-    @Override
-    public void onLoaderReset(Loader<List<News>> loader) {
-        // Loader reset, so we can clear out our existing data.
-        mAdapter.clear();
-    }
+    /**
+     * Return a list of {@link News} objects that has been built up from
+     * parsing the given JSON response.
+     */
+    private static List<News> extractFeatureFromJson(String newJSON) {
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            Intent settingsIntent = new Intent(this, SettingsActivity.class);
-            startActivity(settingsIntent);
-            return true;
+        // If the JSON string is empty or null, then return early.
+        if (TextUtils.isEmpty(newJSON)) {
+            return null;
         }
-        return super.onOptionsItemSelected(item);
+
+        // Create an empty ArrayList that we can start adding news to
+        List<News> news = new ArrayList<>();
+
+        // Try to parse the JSON response string. If there's a problem with the way the JSON
+        // is formatted, a JSONException exception object will be thrown.
+        // Catch the exception so the app doesn't crash, and print the error message to the logs.
+        try {
+
+            // Create a JSONObject from the JSON response string
+            JSONObject baseJsonResponse = new JSONObject(newJSON);
+
+            JSONObject responseJsonResponse = baseJsonResponse.getJSONObject("response");
+
+            // Extract the JSONArray associated with the key called "features",
+            // which represents a list of features (or news).
+            JSONArray newArray = responseJsonResponse.getJSONArray("results");
+
+            // For each new in the newArray, create an {@link News} object
+            for (int i = 0; i < newArray.length(); i++) {
+
+                // Get a single new at position i within the list of news
+                JSONObject currentNews = newArray.getJSONObject(i);
+
+                // For a given new, extract the JSONObject associated with the
+                // key called "properties", which represents a list of all properties
+                // for that new.
+
+                String title = currentNews.getString("webTitle");
+
+
+                JSONObject properties = currentNews.getJSONObject("fields");
+
+                String description = properties.getString("trailText");
+
+//                // Extract the value for the key called "mag"
+//                double magnitude = properties.getDouble("mag");
+//
+//                // Extract the value for the key called "place"
+//                String location = properties.getString("place");
+//
+//                // Extract the value for the key called "time"
+//                long time = properties.getLong("time");
+//
+//                // Extract the value for the key called "url"
+//                String url = properties.getString("url");
+
+                // Create a new {@link News} object with the magnitude, location, time,
+                // and url from the JSON response.
+                //News news = new News(magnitude, location, time, url);
+
+                // Add the new {@link News} to the list of news.
+                //news.add(news);
+            }
+
+        } catch (JSONException e) {
+            // If an error is thrown when executing any of the above statements in the "try" block,
+            // catch the exception here, so the app doesn't crash. Print a log message
+            // with the message from the exception.
+            Log.e("QueryUtils", "Problem parsing the new JSON results", e);
+        }
+
+        // Return the list of news
+        return news;
     }
+
+    /**
+     * Query the USGS dataset and return a list of {@link News} objects.
+     */
+    public static List<News> fetchNewsData(String requestUrl) {
+        // Create URL object
+        URL url = createUrl(requestUrl);
+
+        // Perform HTTP request to the URL and receive a JSON response back
+        String jsonResponse = null;
+        try {
+            jsonResponse = makeHttpRequest(url);
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "Problem making the HTTP request.", e);
+        }
+
+        // Extract relevant fields from the JSON response and create a list of {@link News}s
+        List<News> news = extractFeatureFromJson(jsonResponse);
+
+        // Return the list of {@link News}s
+        return news;
+    }
+
 }
