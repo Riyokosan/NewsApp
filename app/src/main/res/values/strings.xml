@@ -26,28 +26,22 @@
     <!-- Label for order-by newest option [CHAR LIMIT=20] -->
     <string name="settings_order_by_newest_label">Newest</string>
     <string name="settings_order_by_newest_value" translatable="false">newest</string>
+
+    <string name="settings_section_label">Section</string>
+
+    <string name="settings_section_name_politics_label" translatable="false">Politics</string>
+
+    <string name="settings_section_name_technology_label" translatable="false">Technology</string>
+
+    <string name="settings_section_name_media_label" translatable="false">Media</string>
+
+    <string name="settings_section_name_environment_label" translatable="false">Environment</string>
+
+    <string name="settings_section_name_info_label" translatable="false">Info</string>
+
+    <string name="settings_section_name_travel_label" translatable="false">Travel</string>
+
+    <string name="settings_section_name_music_label" translatable="false">Music</string>
+
+    <string name="settings_section_name_money_label" translatable="false">Money</string>
 </resources>
-
-    <!--sectionId	"politics"-->
-    <!--sectionName	"Politics"-->
-
-    <!--sectionId	"technology"-->
-    <!--sectionName	"Technology"-->
-
-    <!--sectionId	"media"-->
-    <!--sectionName	"Media"-->
-
-    <!--sectionId	"environment"-->
-    <!--sectionName	"Environment"-->
-
-    <!--sectionId	"info"-->
-    <!--sectionName	"Info"-->
-
-    <!--sectionId	"travel"-->
-    <!--sectionName	"Travel"-->
-
-    <!--sectionId	"music"-->
-    <!--sectionName	"Music"-->
-
-    <!--sectionId	"money"-->
-    <!--sectionName	"Money"-->
