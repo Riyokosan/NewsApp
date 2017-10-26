@@ -10,6 +10,16 @@
         android:key="@string/settings_order_by_key"
         android:title="@string/settings_order_by_label" />
 
+    <PreferenceCategory
+        android:title="@string/settings_section_label">
+        <ListPreference
+            android:title="@string/settings_section_label"
+            android:key="listPref"
+            android:defaultValue="0"
+            android:entries="@array/settings_section_name"
+            android:entryValues="@array/settings_section_value" />
+    </PreferenceCategory>
+
     <EditTextPreference
         android:defaultValue="@string/settings_section_name_default"
         android:inputType="numberDecimal"
