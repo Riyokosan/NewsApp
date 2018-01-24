@@ -1,18 +1,17 @@
 package com.example.android.newsapp;
 
 import android.content.Context;
-import android.graphics.drawable.GradientDrawable;
-import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class NewsAdapter extends ArrayAdapter<News> {
 
@@ -34,77 +33,40 @@ public class NewsAdapter extends ArrayAdapter<News> {
         // Find the earthquake at the given position in the list of earthquakes
         News currentNews = getItem(position);
 
+        // Find the TextView with view ID title of the news
         TextView titleView = (TextView) listItemView.findViewById(R.id.article_title);
-        // Format the magnitude to show 1 decimal place
-        String articleTitle = articleTitle(currentNews.getTitle());
-        // Display the magnitude of the current earthquake in that TextView
-        titleView.setText(articleTitle);
+        // Display the title of the current news in that TextView
+        titleView.setText(currentNews.getTitle());
 
 
-        String description = currentNews.get();
-
-        String primaryLocation;
-        String locationOffset;
-
-        if (originalLocation.contains(LOCATION_SEPARATOR)) {
-            String[] parts = originalLocation.split(LOCATION_SEPARATOR);
-            locationOffset = parts[0] + LOCATION_SEPARATOR;
-            primaryLocation = parts[1];
-        } else {
-            locationOffset = getContext().getString(R.string.near_the);
-            primaryLocation = originalLocation;
-        }
-
-        TextView primaryLocationView = (TextView) listItemView.findViewById(R.id.primary_location);
-        primaryLocationView.setText(primaryLocation);
-
-        TextView locationOffsetView = (TextView) listItemView.findViewById(R.id.location_offset);
-        locationOffsetView.setText(locationOffset);
-
-        // Create a new Date object from the time in milliseconds of the earthquake
-        Date dateObject = new Date(currentNews.getDate());
+        // Find the TextView with view ID title of the news
+        TextView resumeView = (TextView) listItemView.findViewById(R.id.article_description);
+        // Display the title of the current news in that TextView
+        resumeView.setText(currentNews.getResume());
 
         // Find the TextView with view ID date
         TextView dateView = (TextView) listItemView.findViewById(R.id.date);
-        // Format the date string (i.e. "Mar 3, 1984")
-        String formattedDate = formatDate(dateObject);
-        // Display the date of the current earthquake in that TextView
-        dateView.setText(formattedDate);
+        // Display the date when the current news was published in that TextView
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy'T'HH:mm:ss", Locale.UK);
+        SimpleDateFormat dateFormat2 = new SimpleDateFormat("EEEE dd MMMM yyyy", Locale.UK);
 
-        // Find the TextView with view ID time
-        TextView timeView = (TextView) listItemView.findViewById(R.id.time);
-        // Format the time string (i.e. "4:30PM")
-        String formattedTime = formatTime(dateObject);
-        // Display the time of the current earthquake in that TextView
-        timeView.setText(formattedTime);
+        try {
+            Date date = dateFormat.parse(currentNews.getDate());
+
+            String parseDate = dateFormat2.format(date);
+            dateView.setText(parseDate);
+        } catch (ParseException e) {
+        }
+
+        // Find the TextView with view ID news_section of the news
+        TextView newsSectionView = (TextView) listItemView.findViewById(R.id.section);
+        // Display the news_section of the current news in that TextView
+        newsSectionView.setText(currentNews.getSectionName());
 
         // Return the list item view that is now showing the appropriate data
         return listItemView;
 
     }
 
-    /**
-     * Return the formatted magnitude string showing 1 decimal place (i.e. "3.2")
-     * from a decimal magnitude value.
-     */
-    private String formatMagnitude(double magnitude) {
-        DecimalFormat magnitudeFormat = new DecimalFormat("0.0");
-        return magnitudeFormat.format(magnitude);
-    }
-
-    /**
-     * Return the formatted date string (i.e. "3 Mar 1984") from a Date object.
-     */
-    private String formatDate(Date dateObject) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd LLL yyyy");
-        return dateFormat.format(dateObject);
-    }
-
-    /**
-     * Return the formatted date string (i.e. "14:30") from a Date object.
-     */
-    private String formatTime(Date dateObject) {
-        SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm");
-        return timeFormat.format(dateObject);
-    }
 }
+

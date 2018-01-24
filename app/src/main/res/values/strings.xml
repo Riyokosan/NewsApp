@@ -28,20 +28,32 @@
     <string name="settings_order_by_newest_value" translatable="false">newest</string>
 
     <string name="settings_section_label">Section</string>
+    <string name="settings_section_default" translatable="false">@string/settings_section_none_label</string>
 
-    <string name="settings_section_name_politics_label" translatable="false">Politics</string>
+    <string name="settings_section_none_label">None</string>
+    <string name="settings_section_none_value" translatable="false">0</string>
 
-    <string name="settings_section_name_technology_label" translatable="false">Technology</string>
+    <string name="settings_section_name_politics_label">Politics</string>
+    <string name="settings_section_name_politics_value" translatable="false">politics</string>
 
-    <string name="settings_section_name_media_label" translatable="false">Media</string>
+    <string name="settings_section_name_technology_label">Technology</string>
+    <string name="settings_section_name_technology_value" translatable="false">technology</string>
 
-    <string name="settings_section_name_environment_label" translatable="false">Environment</string>
+    <string name="settings_section_name_media_label">Media</string>
+    <string name="settings_section_name_media_value" translatable="false">media</string>
 
-    <string name="settings_section_name_info_label" translatable="false">Info</string>
+    <string name="settings_section_name_environment_label">Environment</string>
+    <string name="settings_section_name_environment_value" translatable="false">environment</string>
+
+    <string name="settings_section_name_info_label">Info</string>
+    <string name="settings_section_name_info_value" translatable="false">info</string>
 
     <string name="settings_section_name_travel_label" translatable="false">Travel</string>
+    <string name="settings_section_name_travel_value" translatable="false">travel</string>
 
     <string name="settings_section_name_music_label" translatable="false">Music</string>
+    <string name="settings_section_name_music_value" translatable="false">music</string>
 
     <string name="settings_section_name_money_label" translatable="false">Money</string>
+    <string name="settings_section_name_money_value" translatable="false">money</string>
 </resources>
