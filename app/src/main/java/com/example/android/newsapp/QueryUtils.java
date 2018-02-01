@@ -145,29 +145,37 @@ public final class QueryUtils {
 
                 String title = currentNews.getString("webTitle");
 
-
                 JSONObject properties = currentNews.getJSONObject("fields");
 
                 String description = properties.getString("trailText");
 
-//                // Extract the value for the key called "mag"
-//                double magnitude = properties.getDouble("mag");
-//
-//                // Extract the value for the key called "place"
-//                String location = properties.getString("place");
-//
-//                // Extract the value for the key called "time"
-//                long time = properties.getLong("time");
-//
-//                // Extract the value for the key called "url"
-//                String url = properties.getString("url");
+                // Extract the value for the key called "sectionName"
+                String section = properties.getString("sectionName");
 
-                // Create a new {@link News} object with the magnitude, location, time,
-                // and url from the JSON response.
-                //News news = new News(magnitude, location, time, url);
+//                String author;
+//                if (properties.has("byline")) {
+//                    author = properties.getString("byline");
+//                } else {
+//                    author = "";
+//                }
+
+                // Extract the value for the key called "date"
+                String date;
+                if (currentNews.has("webPublicationDate")) {
+                    date = currentNews.getString("webPublicationDate");
+                } else {
+                    date = "";
+                }
+
+                // Extract the value for the key called "webUrl"
+                String url = currentNews.getString("webUrl");
+
+                // Create a new {@link News} object with the title, section, author,
+                // date and url from the JSON response
+                News newsDisplayed = new News(title, description, section, date, url);
 
                 // Add the new {@link News} to the list of news.
-                //news.add(news);
+                news.add(newsDisplayed);
             }
 
         } catch (JSONException e) {
