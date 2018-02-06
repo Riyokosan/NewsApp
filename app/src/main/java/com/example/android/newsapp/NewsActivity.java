@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -108,17 +109,20 @@ public class NewsActivity extends AppCompatActivity
     @Override
     public Loader<List<News>> onCreateLoader(int i, Bundle bundle) {
 
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String minMagnitude = sharedPrefs.getString(
-                getString(R.string.settings_section_name_key),
-                getString(R.string.settings_section_name_default));
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        String searchSection = sharedPreferences.getString(
+                getString(R.string.settings_section_key),
+                getString(R.string.settings_section_label));
+
+        // Create an URI and an URI Builder
         Uri baseUri = Uri.parse(GUARDIAN_REQUEST_URL);
         Uri.Builder uriBuilder = baseUri.buildUpon();
 
-        uriBuilder.appendQueryParameter("format", "geojson");
-        uriBuilder.appendQueryParameter("limit", "10");
-        uriBuilder.appendQueryParameter("show-fields", "trailText");
+        // Append the search parameters to the request URL
+        uriBuilder.appendQueryParameter("q", searchSection);
         uriBuilder.appendQueryParameter("orderby", "time");
+        Log.v("NewsActivity", "Uri: " + uriBuilder);
 
         return new NewsLoader(this, uriBuilder.toString());
     }
@@ -132,8 +136,10 @@ public class NewsActivity extends AppCompatActivity
         // Set empty state text to display "No news found."
         mEmptyStateTextView.setText(R.string.no_news);
 
-        // Clear the adapter of previous earthquake data
+        // Clear the adapter of previous news data
         mAdapter.clear();
+
+        Log.v(LOG_TAG,"what news " + news);
 
         // If there is a valid list of {@link News}s, then add them to the adapter's
         // data set. This will trigger the ListView to update.
