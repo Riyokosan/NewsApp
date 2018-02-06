@@ -176,6 +176,9 @@ public final class QueryUtils {
 
                 // Add the new {@link News} to the list of news.
                 news.add(newsDisplayed);
+
+                Log.v("QueryUtils", "JSON results " + newsDisplayed);
+
             }
 
         } catch (JSONException e) {
