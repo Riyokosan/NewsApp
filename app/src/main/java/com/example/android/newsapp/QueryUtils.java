@@ -144,13 +144,14 @@ public final class QueryUtils {
                 // for that new.
 
                 String title = currentNews.getString("webTitle");
+                
+                // Extract the value for the key called "sectionName"
+                String section = currentNews.getString("sectionName");
 
                 JSONObject properties = currentNews.getJSONObject("fields");
 
                 String description = properties.getString("trailText");
 
-                // Extract the value for the key called "sectionName"
-                String section = properties.getString("sectionName");
 
 //                String author;
 //                if (properties.has("byline")) {
