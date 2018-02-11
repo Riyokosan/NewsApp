@@ -30,6 +30,9 @@ public class NewsActivity extends AppCompatActivity
     /** URL for earthquake data from the USGS dataset */
     private static final String GUARDIAN_REQUEST_URL = "https://content.guardianapis.com/search";
 
+    /** API key to be able to use the API */
+    private static final String API_KEY = "test";
+
     /**
      * Constant value for the earthquake loader ID. We can choose any integer.
      * This really only comes into play if you're using multiple loaders.
@@ -121,7 +124,10 @@ public class NewsActivity extends AppCompatActivity
 
         // Append the search parameters to the request URL
         uriBuilder.appendQueryParameter("q", searchSection);
-        uriBuilder.appendQueryParameter("orderby", "time");
+        uriBuilder.appendQueryParameter("show-fields", "byline");
+        uriBuilder.appendQueryParameter("order-by", "newest");
+        uriBuilder.appendQueryParameter("use-date", "published");
+        uriBuilder.appendQueryParameter("api_key", API_KEY);
         Log.v("NewsActivity", "Uri: " + uriBuilder);
 
         return new NewsLoader(this, uriBuilder.toString());
@@ -171,4 +177,3 @@ public class NewsActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 }
-
