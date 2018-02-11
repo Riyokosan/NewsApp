@@ -127,7 +127,7 @@ public class NewsActivity extends AppCompatActivity
         uriBuilder.appendQueryParameter("show-fields", "byline");
         uriBuilder.appendQueryParameter("order-by", "newest");
         uriBuilder.appendQueryParameter("use-date", "published");
-        uriBuilder.appendQueryParameter("api_key", API_KEY);
+        uriBuilder.appendQueryParameter("api-key", API_KEY);
         Log.v("NewsActivity", "Uri: " + uriBuilder);
 
         return new NewsLoader(this, uriBuilder.toString());
