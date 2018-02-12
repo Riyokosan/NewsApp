@@ -144,7 +144,7 @@ public final class QueryUtils {
                 // for that new.
 
                 String title = currentNews.getString("webTitle");
-                
+
                 // Extract the value for the key called "sectionName"
                 String section = currentNews.getString("sectionName");
 
@@ -152,13 +152,12 @@ public final class QueryUtils {
 
                 String description = properties.getString("trailText");
 
-
-//                String author;
-//                if (properties.has("byline")) {
-//                    author = properties.getString("byline");
-//                } else {
-//                    author = "";
-//                }
+                String author;
+                if (properties.has("byline")) {
+                    author = properties.getString("byline");
+                } else {
+                    author = "";
+                }
 
                 // Extract the value for the key called "date"
                 String date;
@@ -173,7 +172,7 @@ public final class QueryUtils {
 
                 // Create a new {@link News} object with the title, section, author,
                 // date and url from the JSON response
-                News newsDisplayed = new News(title, description, section, date, url);
+                News newsDisplayed = new News(title, description, section, date, author, url);
 
                 // Add the new {@link News} to the list of news.
                 news.add(newsDisplayed);
