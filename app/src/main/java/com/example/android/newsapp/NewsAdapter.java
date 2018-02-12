@@ -16,8 +16,8 @@ import java.util.Locale;
 public class NewsAdapter extends ArrayAdapter<News> {
 
 
-    public NewsAdapter(Context context, List<News> earthquake) {
-        super(context, 0, earthquake);
+    public NewsAdapter(Context context, List<News> news) {
+        super(context, 0, news);
     }
 
     @Override
@@ -30,7 +30,7 @@ public class NewsAdapter extends ArrayAdapter<News> {
                     R.layout.news_list_items, parent, false);
         }
 
-        // Find the earthquake at the given position in the list of earthquakes
+        // Find the news at the given position in the list of news
         News currentNews = getItem(position);
 
         // Find the TextView with view ID title of the news
@@ -44,6 +44,11 @@ public class NewsAdapter extends ArrayAdapter<News> {
         // Display the title of the current news in that TextView
         resumeView.setText(currentNews.getResume());
 
+        // Find the TextView with view ID author of the news
+        TextView authorView = (TextView) listItemView.findViewById(R.id.author);
+        // Display the author of the current news in that TextView
+        authorView.setText(currentNews.getAuthor());
+
         // Find the TextView with view ID date
         TextView dateView = (TextView) listItemView.findViewById(R.id.date);
         // Display the date when the current news was published in that TextView
@@ -56,6 +61,7 @@ public class NewsAdapter extends ArrayAdapter<News> {
             String parseDate = dateFormat2.format(date);
             dateView.setText(parseDate);
         } catch (ParseException e) {
+            e.printStackTrace();
         }
 
         // Find the TextView with view ID news_section of the news
@@ -69,4 +75,3 @@ public class NewsAdapter extends ArrayAdapter<News> {
     }
 
 }
-
