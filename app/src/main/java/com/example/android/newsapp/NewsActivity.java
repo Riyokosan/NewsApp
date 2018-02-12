@@ -124,7 +124,7 @@ public class NewsActivity extends AppCompatActivity
 
         // Append the search parameters to the request URL
         uriBuilder.appendQueryParameter("q", searchSection);
-        uriBuilder.appendQueryParameter("show-fields", "trailText");
+        uriBuilder.appendQueryParameter("show-fields", "trailText,byline");
         uriBuilder.appendQueryParameter("order-by", "newest");
         uriBuilder.appendQueryParameter("use-date", "published");
         uriBuilder.appendQueryParameter("api-key", API_KEY);
