@@ -14,17 +14,21 @@ public class News {
     /** Resume of the article */
     private String mResume;
 
+    /** Author of the article */
+    private String mAuthor;
+
     /** Link to the article */
     private String mUrl;
 
     /**
      * Create a new News object.
      */
-    public News(String title, String sectionName, String date, String resume, String url) {
+    public News(String title, String sectionName, String date, String resume, String author, String url) {
         mTitle = title;
         mSectionName = sectionName;
         mDate = date;
         mResume = resume;
+        mAuthor = author;
         mUrl = url;
     }
 
@@ -43,6 +47,8 @@ public class News {
     public String getResume() {
         return mResume;
     }
+
+    public String getAuthor () {return mAuthor;}
 
     public String getUrl() {
         return mUrl;
