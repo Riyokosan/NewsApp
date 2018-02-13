@@ -56,9 +56,9 @@ public class NewsAdapter extends ArrayAdapter<News> {
         SimpleDateFormat dateFormat2 = new SimpleDateFormat("EEEE dd MMMM yyyy", Locale.UK);
 
         try {
-            Date date = dateFormat.parse(currentNews.getDate());
+            Date dateFormatted = dateFormat.parse(currentNews.getDate());
 
-            String parseDate = dateFormat2.format(date);
+            String parseDate = dateFormat2.format(dateFormatted);
             dateView.setText(parseDate);
         } catch (ParseException e) {
             e.printStackTrace();
