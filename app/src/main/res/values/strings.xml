@@ -9,10 +9,6 @@
     <!-- Settings Activity Title [CHAR LIMIT=NONE] -->
     <string name="settings_title">News Settings</string>
 
-    <!-- Strings For Minimum Magnitude Preference [CHAR LIMIT=30] -->
-    <string name="settings_section_name_label">Minimum Magnitude</string>
-    <string name="settings_section_name_key" translatable="false">min_magnitude</string>
-    <string name="settings_section_name_default" translatable="false">6</string>
 
     <!-- Strings For Order-By Preference [CHAR LIMIT=30] -->
     <string name="settings_order_by_label">Order By</string>
@@ -28,10 +24,8 @@
     <string name="settings_order_by_newest_value" translatable="false">newest</string>
 
     <string name="settings_section_label">Section</string>
-    <string name="settings_section_default" translatable="false">@string/settings_section_none_label</string>
-
-    <string name="settings_section_none_label">None</string>
-    <string name="settings_section_none_value" translatable="false">0</string>
+    <string name="settings_section_default" translatable="false">@string/settings_section_name_technology_label</string>
+    <string name="settings_section_key">Section</string>
 
     <string name="settings_section_name_politics_label">Politics</string>
     <string name="settings_section_name_politics_value" translatable="false">politics</string>
