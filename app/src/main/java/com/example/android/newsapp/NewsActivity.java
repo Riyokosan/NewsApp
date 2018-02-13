@@ -1,179 +1,77 @@
 package com.example.android.newsapp;
 
-import android.app.LoaderManager;
 import android.content.Context;
-import android.content.Intent;
-import android.content.Loader;
-import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.Uri;
-import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
-public class NewsActivity extends AppCompatActivity
-        implements LoaderManager.LoaderCallbacks<List<News>> {
+public class NewsAdapter extends ArrayAdapter<News> {
 
-    public static final String LOG_TAG = NewsActivity.class.getName();
 
-    /** URL for earthquake data from the USGS dataset */
-    private static final String GUARDIAN_REQUEST_URL = "https://content.guardianapis.com/search";
-
-    /** API key to be able to use the API */
-    private static final String API_KEY = "test";
-
-    /**
-     * Constant value for the earthquake loader ID. We can choose any integer.
-     * This really only comes into play if you're using multiple loaders.
-     */
-    private static final int NEWS_LOADER_ID = 1;
-
-    /** Adapter for the list of news */
-    private NewsAdapter mAdapter;
-
-    /** TextView that is displayed when the list is empty */
-    private TextView mEmptyStateTextView;
+    public NewsAdapter(Context context, List<News> news) {
+        super(context, 0, news);
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.news_activity);
-
-        // Find a reference to the {@link ListView} in the layout
-        ListView newsListView = (ListView) findViewById(R.id.list);
-
-        mEmptyStateTextView = (TextView) findViewById(R.id.empty_view);
-        newsListView.setEmptyView(mEmptyStateTextView);
-
-        // Create a new adapter that takes an empty list of news as input
-        mAdapter = new NewsAdapter(this, new ArrayList<News>());
-
-        // Set the adapter on the {@link ListView}
-        // so the list can be populated in the user interface
-        newsListView.setAdapter(mAdapter);
-
-        // Set an item click listener on the ListView, which sends an intent to a web browser
-        // to open a website with more information about the selected earthquake.
-        newsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                // Find the current earthquake that was clicked on
-                News currentNews = mAdapter.getItem(position);
-
-                // Convert the String URL into a URI object (to pass into the Intent constructor)
-                Uri newsUri = Uri.parse(currentNews.getUrl());
-
-                // Create a new intent to view the earthquake URI
-                Intent websiteIntent = new Intent(Intent.ACTION_VIEW, newsUri);
-
-                // Send the intent to launch a new activity
-                startActivity(websiteIntent);
-            }
-        });
-
-        // Get a reference to the ConnectivityManager to check state of network connectivity
-        ConnectivityManager connMgr = (ConnectivityManager)
-                getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        // Get details on the currently active default data network
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-
-        // If there is a network connection, fetch data
-        if (networkInfo != null && networkInfo.isConnected()) {
-            // Get a reference to the LoaderManager, in order to interact with loaders.
-            LoaderManager loaderManager = getLoaderManager();
-
-            // Initialize the loader. Pass in the int ID constant defined above and pass in null for
-            // the bundle. Pass in this activity for the LoaderCallbacks parameter (which is valid
-            // because this activity implements the LoaderCallbacks interface).
-            loaderManager.initLoader(NEWS_LOADER_ID, null, this);
-        } else {
-            // Otherwise, display error
-            // First, hide loading indicator so error message will be visible
-            View loadingIndicator = findViewById(R.id.loading_indicator);
-            loadingIndicator.setVisibility(View.GONE);
-
-            // Update empty state with no connection error message
-            mEmptyStateTextView.setText(R.string.no_connection);
+    public View getView(int position, View convertView, ViewGroup parent) {
+        // Check if there is an existing list item view (called convertView) that we can reuse,
+        // otherwise, if convertView is null, then inflate a new list item layout.
+        View listItemView = convertView;
+        if (listItemView == null) {
+            listItemView = LayoutInflater.from(getContext()).inflate(
+                    R.layout.news_list_items, parent, false);
         }
-    }
 
-    @Override
-    public Loader<List<News>> onCreateLoader(int i, Bundle bundle) {
+        // Find the news at the given position in the list of news
+        News currentNews = getItem(position);
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        // Find the TextView with view ID title of the news
+        TextView titleView = (TextView) listItemView.findViewById(R.id.article_title);
+        // Display the title of the current news in that TextView
+        titleView.setText(currentNews.getTitle());
 
-        String searchSection = sharedPreferences.getString(
-                getString(R.string.settings_section_key),
-                getString(R.string.settings_section_label));
 
-        // Create an URI and an URI Builder
-        Uri baseUri = Uri.parse(GUARDIAN_REQUEST_URL);
-        Uri.Builder uriBuilder = baseUri.buildUpon();
+        // Find the TextView with view ID title of the news
+        TextView resumeView = (TextView) listItemView.findViewById(R.id.article_description);
+        // Display the title of the current news in that TextView
+        resumeView.setText(currentNews.getResume());
 
-        // Append the search parameters to the request URL
-        uriBuilder.appendQueryParameter("q", searchSection);
-        uriBuilder.appendQueryParameter("show-fields", "trailText,byline");
-        uriBuilder.appendQueryParameter("order-by", "newest");
-        uriBuilder.appendQueryParameter("use-date", "published");
-        uriBuilder.appendQueryParameter("api-key", API_KEY);
-        Log.v("NewsActivity", "Uri: " + uriBuilder);
+        // Find the TextView with view ID author of the news
+        TextView authorView = (TextView) listItemView.findViewById(R.id.author);
+        // Display the author of the current news in that TextView
+        authorView.setText(currentNews.getAuthor());
 
-        return new NewsLoader(this, uriBuilder.toString());
-    }
+        // Find the TextView with view ID date
+        TextView dateView = (TextView) listItemView.findViewById(R.id.date);
+        // Display the date when the current news was published in that TextView
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yy'T'HH:mm:ss", Locale.UK);
+        SimpleDateFormat dateFormat2 = new SimpleDateFormat("EEEE dd MMMM yy", Locale.UK);
 
-    @Override
-    public void onLoadFinished(Loader<List<News>> loader, List<News> news) {
-        // Hide loading indicator because the data has been loaded
-        View loadingIndicator = findViewById(R.id.loading_indicator);
-        loadingIndicator.setVisibility(View.GONE);
+        try {
+            Date dateFormatted = dateFormat.parse(currentNews.getDate());
 
-        // Set empty state text to display "No news found."
-        mEmptyStateTextView.setText(R.string.no_news);
-
-        // Clear the adapter of previous news data
-        mAdapter.clear();
-
-        Log.v(LOG_TAG,"what news " + news);
-
-        // If there is a valid list of {@link News}s, then add them to the adapter's
-        // data set. This will trigger the ListView to update.
-        if (news != null && !news.isEmpty()) {
-            mAdapter.addAll(news);
+            String parseDate = dateFormat2.format(dateFormatted);
+            dateView.setText(parseDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
+
+        // Find the TextView with view ID news_section of the news
+        TextView newsSectionView = (TextView) listItemView.findViewById(R.id.section);
+        // Display the news_section of the current news in that TextView
+        newsSectionView.setText(currentNews.getSectionName());
+
+        // Return the list item view that is now showing the appropriate data
+        return listItemView;
+
     }
 
-    @Override
-    public void onLoaderReset(Loader<List<News>> loader) {
-        // Loader reset, so we can clear out our existing data.
-        mAdapter.clear();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            Intent settingsIntent = new Intent(this, SettingsActivity.class);
-            startActivity(settingsIntent);
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 }
