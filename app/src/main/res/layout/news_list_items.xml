@@ -4,39 +4,28 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:paddingEnd="16dp"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
-    android:paddingStart="16dp">
+    android:paddingEnd="@dimen/activity_margin"
+    android:paddingLeft="@dimen/activity_margin"
+    android:paddingRight="@dimen/activity_margin"
+    android:paddingStart="@dimen/activity_margin">
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_marginTop="5dp"
-        android:layout_weight="1"
+        android:layout_marginTop="@dimen/activity_small_margin"
+        android:layout_weight="2"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/article_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:fontFamily="sans-serif-medium"
-            android:maxLines="1"
-            android:textAllCaps="true"
-            android:textSize="12sp"
-            android:textColor="@color/colorAccent"
-            tools:text="title exemple" />
+            tools:text="title exemple"
+            style="@style/Title" />
 
         <TextView
             android:id="@+id/article_description"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="2"
-            android:textSize="16sp"
-            tools:text="Long placeholder description that should wrap to more than 2 lines of text" />
+            tools:text="Long placeholder description that should wrap to more than 2 lines of text"
+            style="@style/Description" />
 
     </LinearLayout>
 
@@ -44,35 +33,27 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="@dimen/activity_small_margin"
         android:layout_weight="1"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginLeft="@dimen/activity_margin"
+        android:layout_marginRight="@dimen/activity_margin"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/author"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:textSize="12sp"
-            tools:text="John Smith" />
+            tools:text="John Smith"
+            android:textStyle="italic"
+            style="@style/Meta" />
 
         <TextView
             android:id="@+id/date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:textSize="12sp"
+            style="@style/Meta"
             tools:text="Mar 6, 2010" />
 
         <TextView
             android:id="@+id/section"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
+            style="@style/Meta"
             android:textColor="@color/colorAccent"
-            android:textSize="12sp"
             android:textAllCaps="true"
             tools:text="Business" />
 
