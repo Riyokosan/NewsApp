@@ -73,5 +73,4 @@ public class NewsAdapter extends ArrayAdapter<News> {
         return listItemView;
 
     }
-
 }
