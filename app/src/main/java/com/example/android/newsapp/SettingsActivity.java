@@ -23,7 +23,7 @@ public class SettingsActivity extends AppCompatActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.settings_main);
 
-            Preference sectionName = findPreference(getString(R.string.settings_section_name_key));
+            Preference sectionName = findPreference(getString(R.string.settings_section_key));
             bindPreferenceSummaryToValue(sectionName);
 
         }
