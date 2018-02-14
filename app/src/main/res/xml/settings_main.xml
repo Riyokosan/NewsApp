@@ -7,9 +7,9 @@
         android:title="@string/settings_section_label">
         <ListPreference
             android:title="@string/settings_section_label"
-            android:key="listPref"
-            android:defaultValue="0"
-            android:entries="@array/settings_section_name"
+            android:key="@string/settings_section_key"
+            android:defaultValue="@string/settings_section_default"
+            android:entries="@array/settings_section_label"
             android:entryValues="@array/settings_section_value" />
     </PreferenceCategory>
 
