@@ -52,13 +52,13 @@ public class NewsAdapter extends ArrayAdapter<News> {
         // Find the TextView with view ID date
         TextView dateView = (TextView) listItemView.findViewById(R.id.date);
         // Display the date when the current news was published in that TextView
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yy'T'HH:mm:ss", Locale.UK);
-        SimpleDateFormat dateFormat2 = new SimpleDateFormat("EEEE dd MMMM yy", Locale.UK);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
+        SimpleDateFormat dateFormat2 = new SimpleDateFormat("EEE dd MMM yy", Locale.UK);
 
         try {
-            Date dateFormatted = dateFormat.parse(currentNews.getDate());
+            Date date = dateFormat.parse(currentNews.getDate());
 
-            String parseDate = dateFormat2.format(dateFormatted);
+            String parseDate = dateFormat2.format(date);
             dateView.setText(parseDate);
         } catch (ParseException e) {
             e.printStackTrace();
@@ -73,4 +73,6 @@ public class NewsAdapter extends ArrayAdapter<News> {
         return listItemView;
 
     }
+
 }
+
